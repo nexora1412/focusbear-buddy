@@ -2,14 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* FocusBear Study App Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    
+    /* Ice Bear Theme - Cool, minimal polar vibes */
+    --ice-blue: 200 85% 65%;
+    --ice-white: 0 0% 98%;
+    --ice-snow: 210 20% 95%;
+    --ice-frost: 205 30% 92%;
+    --ice-mist: 195 25% 88%;
+    --ice-beige: 30 15% 90%;
+    --ice-grey: 210 10% 75%;
+    --ice-text: 210 25% 25%;
+    --ice-text-light: 210 15% 45%;
+    --ice-steel: 210 20% 35%;
+    
+    /* Grizzly Theme - Warm, energetic autumn vibes */
+    --grizzly-deep: 25 40% 35%;
+    --grizzly-cream: 40 30% 95%;
+    --grizzly-warm: 35 45% 85%;
+    --grizzly-peach: 25 60% 80%;
+    --grizzly-orange: 20 75% 70%;
+    --grizzly-amber: 45 85% 65%;
+    --grizzly-golden: 50 70% 75%;
+    --grizzly-text: 25 35% 25%;
+    --grizzly-text-light: 25 25% 45%;
+    --grizzly-brown: 30 35% 40%;
+    
+    /* Panda Theme - Cute, dreamy aesthetic vibes */
+    --panda-purple: 280 60% 70%;
+    --panda-white: 0 0% 98%;
+    --panda-cream: 50 25% 95%;
+    --panda-pink: 330 50% 88%;
+    --panda-mint: 160 35% 85%;
+    --panda-lavender: 270 40% 88%;
+    --panda-sky: 210 50% 85%;
+    --panda-text: 280 30% 25%;
+    --panda-text-light: 280 20% 45%;
+    --panda-grey: 280 15% 40%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -94,12 +128,75 @@ All colors MUST be HSL.
   }
 }
 
+}
+
+/* Bear Theme Gradients */
+.ice-gradient {
+  background: linear-gradient(135deg, hsl(var(--ice-blue)) 0%, hsl(var(--ice-mist)) 100%);
+}
+
+.grizzly-gradient {
+  background: linear-gradient(135deg, hsl(var(--grizzly-amber)) 0%, hsl(var(--grizzly-peach)) 100%);
+}
+
+.panda-gradient {
+  background: linear-gradient(135deg, hsl(var(--panda-lavender)) 0%, hsl(var(--panda-pink)) 100%);
+}
+
+/* Pinterest-style card animations */
+.pinterest-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.pinterest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Focus timer animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+.focus-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
   }
 }
