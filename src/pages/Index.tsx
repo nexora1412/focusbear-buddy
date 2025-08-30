@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dashboard } from '@/components/Dashboard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { FocusTimer } from '@/components/FocusTimer';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -89,25 +90,6 @@ const Index = () => {
 };
 
 // Placeholder components for different pages
-const FocusTimer = ({ theme, setCurrentPage }: { theme: string; setCurrentPage: (page: string) => void }) => (
-  <div className="min-h-screen bg-background p-8">
-    <div className="max-w-4xl mx-auto text-center">
-      <Button onClick={() => setCurrentPage('dashboard')} className="mb-8">
-        ← Back to Dashboard
-      </Button>
-      <Card className="p-12">
-        <h1 className="text-4xl font-bold mb-6">🎯 Focus Timer</h1>
-        <p className="text-xl text-muted-foreground mb-8">
-          Your focus timer will block distracting apps and websites during study sessions.
-        </p>
-        <div className="text-6xl mb-8">⏰</div>
-        <p className="text-lg text-muted-foreground">
-          Start a session to begin your focused study time with your {theme} bear companion!
-        </p>
-      </Card>
-    </div>
-  </div>
-);
 
 const CoursesPage = ({ theme, setCurrentPage }: { theme: string; setCurrentPage: (page: string) => void }) => (
   <div className="min-h-screen bg-background p-8">
