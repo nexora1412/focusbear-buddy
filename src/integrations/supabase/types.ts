@@ -14,7 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      focus_sessions: {
+        Row: {
+          coins_earned: number
+          completed: boolean
+          created_at: string
+          duration: number
+          end_time: string | null
+          id: string
+          session_type: string
+          start_time: string
+          user_id: string
+        }
+        Insert: {
+          coins_earned?: number
+          completed?: boolean
+          created_at?: string
+          duration: number
+          end_time?: string | null
+          id?: string
+          session_type?: string
+          start_time?: string
+          user_id: string
+        }
+        Update: {
+          coins_earned?: number
+          completed?: boolean
+          created_at?: string
+          duration?: number
+          end_time?: string | null
+          id?: string
+          session_type?: string
+          start_time?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      focus_stats: {
+        Row: {
+          break_glass_reset_date: string
+          break_glass_used: number
+          current_streak: number
+          daily_coins: number
+          daily_screen_time_saved: number
+          id: string
+          last_activity_date: string
+          monthly_coins: number
+          today_sessions: number
+          total_sessions: number
+          updated_at: string
+          user_id: string
+          weekly_coins: number
+        }
+        Insert: {
+          break_glass_reset_date?: string
+          break_glass_used?: number
+          current_streak?: number
+          daily_coins?: number
+          daily_screen_time_saved?: number
+          id?: string
+          last_activity_date?: string
+          monthly_coins?: number
+          today_sessions?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id: string
+          weekly_coins?: number
+        }
+        Update: {
+          break_glass_reset_date?: string
+          break_glass_used?: number
+          current_streak?: number
+          daily_coins?: number
+          daily_screen_time_saved?: number
+          id?: string
+          last_activity_date?: string
+          monthly_coins?: number
+          today_sessions?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id?: string
+          weekly_coins?: number
+        }
+        Relationships: []
+      }
+      focus_whitelist: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          item_type: string
+          user_id: string
+          value: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_type?: string
+          user_id: string
+          value: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          item_type?: string
+          user_id?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

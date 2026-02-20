@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import mathBearImage from '@/assets/math-bear.png';
 import cozyBearImage from '@/assets/cozy-bear.png';
 import studyBearImage from '@/assets/study-bear.png';
+import { useFocusData } from '@/hooks/useFocusData';
+import { useAuth } from '@/hooks/useAuth';
 
 interface DashboardProps {
   theme: string;
@@ -12,37 +14,21 @@ interface DashboardProps {
 }
 
 export function Dashboard({ theme, darkMode, setCurrentPage }: DashboardProps) {
-  const [focusStats, setFocusStats] = useState({
-    dailyCoins: 0,
-    dailyScreenTimeSaved: 0,
-    currentStreak: 0,
-    todaySessions: 0
-  });
+  const { stats } = useFocusData();
+  const { signOut } = useAuth();
+  
+  const focusStats = {
+    dailyCoins: stats.daily_coins,
+    dailyScreenTimeSaved: stats.daily_screen_time_saved,
+    currentStreak: stats.current_streak,
+    todaySessions: stats.today_sessions,
+  };
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('focus-timer-data');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        const today = new Date().toDateString();
-        
-        setFocusStats({
-          dailyCoins: data.lastActivityDate === today ? data.dailyCoins || 0 : 0,
-          dailyScreenTimeSaved: data.lastActivityDate === today ? data.dailyScreenTimeSaved || 0 : 0,
-          currentStreak: data.currentStreak || 0,
-          todaySessions: data.lastActivityDate === today ? Math.floor((data.dailyCoins || 0) / 2) : 0
-        });
-      } catch (error) {
-        console.error('Failed to load focus stats');
-      }
-    }
   }, []);
 
   // Helper functions for theme-based styling
@@ -354,6 +340,14 @@ export function Dashboard({ theme, darkMode, setCurrentPage }: DashboardProps) {
                 className="focus-transition hover:scale-105"
               >
                 {isBearTheme() ? `${colors?.emoji} Deep 45min` : '🎯 Deep Work 45min'}
+              </Button>
+              <Button
+                onClick={signOut}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                Log Out
               </Button>
             </div>
           </div>
