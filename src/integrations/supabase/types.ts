@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignments: {
+        Row: {
+          coins_earned: number | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_minutes: number | null
+          id: string
+          priority: string
+          status: string
+          subject: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          status?: string
+          subject?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          status?: string
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          completed_lessons: number | null
+          created_at: string
+          description: string | null
+          id: string
+          instructor: string | null
+          progress: number | null
+          schedule: string | null
+          status: string
+          title: string
+          total_lessons: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_lessons?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor?: string | null
+          progress?: number | null
+          schedule?: string | null
+          status?: string
+          title: string
+          total_lessons?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_lessons?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor?: string | null
+          progress?: number | null
+          schedule?: string | null
+          status?: string
+          title?: string
+          total_lessons?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       focus_sessions: {
         Row: {
           coins_earned: number
@@ -128,6 +221,114 @@ export type Database = {
         }
         Relationships: []
       }
+      habits: {
+        Row: {
+          best_streak: number | null
+          coins_per_completion: number | null
+          created_at: string
+          current_streak: number | null
+          description: string | null
+          frequency: string
+          id: string
+          last_completed_date: string | null
+          title: string
+          total_completions: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          coins_per_completion?: number | null
+          created_at?: string
+          current_streak?: number | null
+          description?: string | null
+          frequency?: string
+          id?: string
+          last_completed_date?: string | null
+          title: string
+          total_completions?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          coins_per_completion?: number | null
+          created_at?: string
+          current_streak?: number | null
+          description?: string | null
+          frequency?: string
+          id?: string
+          last_completed_date?: string | null
+          title?: string
+          total_completions?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ideas: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notebooks: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -150,6 +351,57 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          coins_earned: number | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_minutes: number | null
+          id: string
+          priority: string
+          reminder_enabled: boolean | null
+          scheduled_time: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          reminder_enabled?: boolean | null
+          scheduled_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins_earned?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          reminder_enabled?: boolean | null
+          scheduled_time?: string | null
+          status?: string
+          title?: string
           updated_at?: string
           user_id?: string
         }
