@@ -186,6 +186,13 @@ export function Dashboard({ theme, darkMode, setCurrentPage }: DashboardProps) {
       color: 'bg-red-50'
     },
     { 
+      name: 'Vision Board', 
+      emoji: '🧠', 
+      desc: 'Dreams & goals', 
+      id: 'vision-board',
+      color: 'bg-pink-50'
+    },
+    { 
       name: 'Reading', 
       emoji: '📖', 
       desc: 'Book progress', 

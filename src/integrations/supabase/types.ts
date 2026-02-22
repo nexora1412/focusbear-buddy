@@ -231,6 +231,8 @@ export type Database = {
           frequency: string
           id: string
           last_completed_date: string | null
+          start_date: string | null
+          target_days: number | null
           title: string
           total_completions: number | null
           updated_at: string
@@ -245,6 +247,8 @@ export type Database = {
           frequency?: string
           id?: string
           last_completed_date?: string | null
+          start_date?: string | null
+          target_days?: number | null
           title: string
           total_completions?: number | null
           updated_at?: string
@@ -259,6 +263,8 @@ export type Database = {
           frequency?: string
           id?: string
           last_completed_date?: string | null
+          start_date?: string | null
+          target_days?: number | null
           title?: string
           total_completions?: number | null
           updated_at?: string
@@ -401,6 +407,39 @@ export type Database = {
           reminder_enabled?: boolean | null
           scheduled_time?: string | null
           status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vision_board: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
           title?: string
           updated_at?: string
           user_id?: string

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useStudyData } from '@/hooks/useStudyData';
+import { iceBear, renderProgressBar } from '@/lib/iceBearMessages';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   theme: string;
@@ -13,12 +15,15 @@ interface Props {
 export function CoursesPage({ theme, setCurrentPage }: Props) {
   const { courses, addCourse, updateCourse, deleteCourse } = useStudyData();
   const [showForm, setShowForm] = useState(false);
+  const [bearMessage, setBearMessage] = useState('');
   const [form, setForm] = useState({ title: '', description: '', instructor: '', schedule: '', total_lessons: 0 });
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return;
     await addCourse(form);
+    setBearMessage(`🧊 Ice Bear logs course: "${form.title}". Ice Bear approves structured suffering. Begin.`);
+    toast({ title: '🧊 Course Added', description: `Ice Bear tracks "${form.title}".` });
     setForm({ title: '', description: '', instructor: '', schedule: '', total_lessons: 0 });
     setShowForm(false);
   };
@@ -26,7 +31,9 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
   const completeLesson = async (id: string, completed: number, total: number) => {
     const newCompleted = Math.min(completed + 1, total);
     const progress = total > 0 ? Math.round((newCompleted / total) * 100) : 0;
-    await updateCourse(id, { completed_lessons: newCompleted, progress, status: newCompleted >= total ? 'completed' : 'active' });
+    const status = newCompleted >= total ? 'completed' : 'active';
+    setBearMessage(iceBear.courseProgress(newCompleted, total));
+    await updateCourse(id, { completed_lessons: newCompleted, progress, status });
   };
 
   return (
@@ -37,6 +44,16 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
           <h1 className="text-3xl font-semibold">📕 Courses</h1>
           <Button onClick={() => setShowForm(!showForm)}>{showForm ? 'Cancel' : '+ New Course'}</Button>
         </div>
+
+        {bearMessage && (
+          <Card className="p-4 mb-6 border-2 bg-muted/30">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🐻‍❄️</span>
+              <p className="text-sm whitespace-pre-line text-foreground">{bearMessage}</p>
+            </div>
+            <Button size="sm" variant="ghost" className="mt-2 text-xs" onClick={() => setBearMessage('')}>Dismiss</Button>
+          </Card>
+        )}
 
         {showForm && (
           <Card className="p-6 mb-6">
@@ -56,10 +73,17 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
           </Card>
         )}
 
+        {/* Coin Rules */}
+        <Card className="p-4 mb-6 bg-muted/20">
+          <div className="text-xs text-muted-foreground">
+            🧊 <strong>Ice Bear's Rules:</strong> Each ✅ lesson = +3 coins. Empty lesson = -1 coin + Ice Bear's silent glare.
+          </div>
+        </Card>
+
         {courses.length === 0 && !showForm && (
           <Card className="p-8 text-center">
-            <p className="text-4xl mb-4">🎓</p>
-            <p className="text-muted-foreground">No courses yet. Add your classes!</p>
+            <p className="text-2xl mb-2">🐻‍❄️</p>
+            <p className="text-sm text-muted-foreground">No courses yet. Ice Bear demands purpose. Add your classes.</p>
           </Card>
         )}
 
@@ -81,7 +105,7 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
                 <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1">
                     <span>{course.completed_lessons}/{course.total_lessons} lessons</span>
-                    <span>{course.progress}%</span>
+                    <span>{renderProgressBar(course.completed_lessons, course.total_lessons)} {course.progress}%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
                     <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${course.progress}%` }}></div>
