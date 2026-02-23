@@ -10,6 +10,7 @@ import { IdeasPage } from '@/components/IdeasPage';
 import { AssignmentsPage } from '@/components/AssignmentsPage';
 import { CoursesPage } from '@/components/CoursesPage';
 import { VisionBoardPage } from '@/components/VisionBoardPage';
+import { LibraryPage } from '@/components/LibraryPage';
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -47,7 +48,7 @@ const Index = () => {
       case 'vision-board':
         return <VisionBoardPage theme={theme} setCurrentPage={setCurrentPage} />;
       case 'library':
-        return <NotebooksPage theme={theme} setCurrentPage={setCurrentPage} />;
+        return <LibraryPage theme={theme} setCurrentPage={setCurrentPage} />;
       case 'focus-mode':
         return <FocusModePage theme={theme} setCurrentPage={setCurrentPage} />;
       default:

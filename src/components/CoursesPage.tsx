@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useStudyData } from '@/hooks/useStudyData';
 import { iceBear, renderProgressBar } from '@/lib/iceBearMessages';
 import { toast } from '@/hooks/use-toast';
+import { uploadFile, getFileType } from '@/lib/fileUpload';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Props {
   theme: string;
@@ -13,10 +16,17 @@ interface Props {
 }
 
 export function CoursesPage({ theme, setCurrentPage }: Props) {
+  const { user } = useAuth();
   const { courses, addCourse, updateCourse, deleteCourse } = useStudyData();
   const [showForm, setShowForm] = useState(false);
   const [bearMessage, setBearMessage] = useState('');
   const [form, setForm] = useState({ title: '', description: '', instructor: '', schedule: '', total_lessons: 0 });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Course materials stored locally
+  const [courseMaterials, setCourseMaterials] = useState<Record<string, { url: string; type: string; name: string }[]>>({});
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +35,26 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
     setBearMessage(`🧊 Ice Bear logs course: "${form.title}". Ice Bear approves structured suffering. Begin.`);
     toast({ title: '🧊 Course Added', description: `Ice Bear tracks "${form.title}".` });
     setForm({ title: '', description: '', instructor: '', schedule: '', total_lessons: 0 });
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setShowForm(false);
+  };
+
+  const handleUploadMaterial = async (courseId: string) => {
+    if (!user || !selectedFile) return;
+    setUploading(true);
+    const url = await uploadFile(user.id, selectedFile, `courses/${courseId}`);
+    if (url) {
+      const type = getFileType(selectedFile);
+      setCourseMaterials(prev => ({
+        ...prev,
+        [courseId]: [...(prev[courseId] || []), { url, type, name: selectedFile.name }],
+      }));
+      toast({ title: '🧊 Material Added', description: `Ice Bear filed "${selectedFile.name}".` });
+    }
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setUploading(false);
   };
 
   const completeLesson = async (id: string, completed: number, total: number) => {
@@ -76,7 +105,7 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
         {/* Coin Rules */}
         <Card className="p-4 mb-6 bg-muted/20">
           <div className="text-xs text-muted-foreground">
-            🧊 <strong>Ice Bear's Rules:</strong> Each ✅ lesson = +3 coins. Empty lesson = -1 coin + Ice Bear's silent glare.
+            🧊 <strong>Ice Bear's Rules:</strong> Each ✅ lesson = +3 coins. Empty lesson = -1 coin + Ice Bear's silent glare. Upload PDFs & images as course materials.
           </div>
         </Card>
 
@@ -112,6 +141,43 @@ export function CoursesPage({ theme, setCurrentPage }: Props) {
                   </div>
                 </div>
               )}
+
+              {/* Materials */}
+              {courseMaterials[course.id]?.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs font-medium mb-1">📎 Materials:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {courseMaterials[course.id].map((m, i) => (
+                      <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 rounded bg-muted hover:bg-muted/80 truncate max-w-[120px]">
+                        {m.type === 'pdf' ? '📄' : '🖼️'} {m.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Upload material */}
+              <div className="mb-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg,.webp"
+                  onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                  className="hidden"
+                  id={`course-upload-${course.id}`}
+                />
+                <div className="flex gap-2">
+                  <label htmlFor={`course-upload-${course.id}`} className="cursor-pointer text-xs px-3 py-1.5 rounded border border-input bg-background hover:bg-muted transition-colors">
+                    📎 Add Material
+                  </label>
+                  {selectedFile && (
+                    <Button size="sm" variant="outline" className="text-xs" disabled={uploading} onClick={() => handleUploadMaterial(course.id)}>
+                      {uploading ? '⏳' : '⬆️'} Upload
+                    </Button>
+                  )}
+                </div>
+              </div>
+
               <div className="flex gap-2">
                 {course.status !== 'completed' && course.total_lessons > 0 && (
                   <Button size="sm" onClick={() => completeLesson(course.id, course.completed_lessons, course.total_lessons)}>+ Lesson</Button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,12 +6,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { iceBear } from '@/lib/iceBearMessages';
+import { uploadFile } from '@/lib/fileUpload';
 
 interface VisionItem {
   id: string;
   title: string;
   content: string;
   category: string;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -26,6 +28,9 @@ export function VisionBoardPage({ theme, setCurrentPage }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [bearMessage, setBearMessage] = useState('');
   const [form, setForm] = useState({ title: '', content: '', category: 'thought' });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchItems = useCallback(async () => {
     if (!user) return;
@@ -42,15 +47,26 @@ export function VisionBoardPage({ theme, setCurrentPage }: Props) {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !form.title.trim()) return;
+    setUploading(true);
+
+    let imageUrl: string | null = null;
+    if (selectedFile) {
+      imageUrl = await uploadFile(user.id, selectedFile, 'vision-board');
+    }
+
     await supabase.from('vision_board').insert({
       user_id: user.id,
       title: form.title,
       content: form.content,
       category: form.category,
+      image_url: imageUrl,
     });
     setBearMessage(iceBear.visionBoardReply(form.title + ' ' + form.content));
     setForm({ title: '', content: '', category: 'thought' });
+    setSelectedFile(null);
     setShowForm(false);
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     await fetchItems();
   };
 
@@ -87,7 +103,7 @@ export function VisionBoardPage({ theme, setCurrentPage }: Props) {
 
         <Card className="p-4 mb-6 bg-muted/20">
           <div className="text-xs text-muted-foreground">
-            🧊 <strong>Ice Bear allows creativity. Barely.</strong> Random thoughts, dreams, goals, motivational quotes — Ice Bear will comment on all of them. Board updates daily. Ice Bear occasionally adds frozen memes for "inspiration."
+            🧊 <strong>Ice Bear allows creativity. Barely.</strong> Random thoughts, dreams, goals, images, motivational quotes — Ice Bear will comment on all of them.
           </div>
         </Card>
 
@@ -102,7 +118,26 @@ export function VisionBoardPage({ theme, setCurrentPage }: Props) {
                 <option value="goal">🎯 Goal</option>
                 <option value="quote">💬 Quote</option>
               </select>
-              <Button type="submit" className="w-full">Add to Vision Board</Button>
+              {/* Image upload */}
+              <div className="border-2 border-dashed border-input rounded-md p-6 text-center">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.gif"
+                  onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                  className="hidden"
+                  id="vision-upload"
+                />
+                <label htmlFor="vision-upload" className="cursor-pointer">
+                  <p className="text-2xl mb-2">🖼️</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedFile ? `✅ ${selectedFile.name}` : 'Click to add an image (optional)'}
+                  </p>
+                </label>
+              </div>
+              <Button type="submit" className="w-full" disabled={uploading}>
+                {uploading ? '🧊 Ice Bear is uploading...' : 'Add to Vision Board'}
+              </Button>
             </form>
           </Card>
         )}
@@ -116,7 +151,12 @@ export function VisionBoardPage({ theme, setCurrentPage }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map(item => (
-            <Card key={item.id} className="p-5">
+            <Card key={item.id} className="p-5 overflow-hidden">
+              {item.image_url && (
+                <div className="mb-3 rounded-md overflow-hidden bg-muted aspect-video">
+                  <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+                </div>
+              )}
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{categoryEmoji[item.category] || '💭'}</span>
                 <h3 className="font-semibold text-sm">{item.title}</h3>
