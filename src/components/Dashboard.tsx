@@ -6,6 +6,7 @@ import cozyBearImage from '@/assets/cozy-bear.png';
 import studyBearImage from '@/assets/study-bear.png';
 import { useFocusData } from '@/hooks/useFocusData';
 import { useAuth } from '@/hooks/useAuth';
+import { CompletionGraphs } from '@/components/CompletionGraphs';
 
 interface DashboardProps {
   theme: string;
@@ -522,6 +523,14 @@ export function Dashboard({ theme, darkMode, setCurrentPage }: DashboardProps) {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Completion Graphs */}
+        <div className="mb-8 lg:mb-12">
+          <h2 className="text-2xl font-semibold text-foreground mb-6">
+            {isBearTheme() ? `${getThemeName()}'s Progress ${colors?.emoji}` : '📈 Your Progress'}
+          </h2>
+          <CompletionGraphs />
         </div>
 
         {/* Daily Challenge Card */}
