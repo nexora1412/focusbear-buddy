@@ -15,11 +15,21 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  const clearLocalAuthState = async () => {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Ignore local cleanup failures.
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      await clearLocalAuthState();
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -54,6 +64,8 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      await clearLocalAuthState();
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
