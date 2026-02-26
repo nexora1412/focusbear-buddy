@@ -8,26 +8,49 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    let isMounted = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!isMounted) return;
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        // Clear stale session data
-        supabase.auth.signOut();
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+
+        if (!isMounted) return;
+
+        if (error) {
+          throw error;
+        }
+
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+      } catch (error) {
+        console.error('Failed to restore auth session, clearing local session.', error);
+
+        // Clear local broken/stale session without relying on network.
+        await supabase.auth.signOut({ scope: 'local' });
+
+        if (!isMounted) return;
         setSession(null);
         setUser(null);
-      } else {
-        setSession(session);
-        setUser(session?.user ?? null);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
