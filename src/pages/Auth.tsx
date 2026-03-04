@@ -70,28 +70,14 @@ const Auth = () => {
     try {
       await clearLocalAuthState();
 
-      const fallbackBaseUrl = 'https://focusbear-buddy.lovable.app';
-      const primaryRedirect = `${window.location.origin}/reset-password`;
-      const fallbackRedirect = `${fallbackBaseUrl}/reset-password`;
+      // Always use the published URL for password reset redirects
+      const redirectUrl = 'https://focusbear-buddy.lovable.app/reset-password';
 
-      const primaryResult = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: primaryRedirect,
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
       });
 
-      let resetError = primaryResult.error;
-
-      if (
-        resetError &&
-        window.location.hostname.includes('id-preview--') &&
-        primaryRedirect !== fallbackRedirect
-      ) {
-        const fallbackResult = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: fallbackRedirect,
-        });
-        resetError = fallbackResult.error;
-      }
-
-      if (resetError) throw resetError;
+      if (error) throw error;
       toast({
         title: 'Check your email 📧',
         description: 'A password reset link has been sent to your email.',
