@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +15,7 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const clearLocalAuthState = async () => {
     try {
@@ -31,9 +33,11 @@ const Auth = () => {
       await clearLocalAuthState();
 
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        if (!data.session) throw new Error('Login succeeded but no active session was created.');
         toast({ title: 'Welcome back! 🐻', description: 'Logged in successfully.' });
+        navigate('/');
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -66,14 +70,28 @@ const Auth = () => {
     try {
       await clearLocalAuthState();
 
-      const baseUrl = window.location.hostname.includes('id-preview--')
-        ? 'https://focusbear-buddy.lovable.app'
-        : window.location.origin;
+      const fallbackBaseUrl = 'https://focusbear-buddy.lovable.app';
+      const primaryRedirect = `${window.location.origin}/reset-password`;
+      const fallbackRedirect = `${fallbackBaseUrl}/reset-password`;
 
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${baseUrl}/reset-password`,
+      const primaryResult = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: primaryRedirect,
       });
-      if (error) throw error;
+
+      let resetError = primaryResult.error;
+
+      if (
+        resetError &&
+        window.location.hostname.includes('id-preview--') &&
+        primaryRedirect !== fallbackRedirect
+      ) {
+        const fallbackResult = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: fallbackRedirect,
+        });
+        resetError = fallbackResult.error;
+      }
+
+      if (resetError) throw resetError;
       toast({
         title: 'Check your email 📧',
         description: 'A password reset link has been sent to your email.',
