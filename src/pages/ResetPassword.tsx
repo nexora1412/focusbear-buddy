@@ -74,6 +74,14 @@ const ResetPassword = () => {
     }
   };
 
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-4xl animate-bounce">🐻</div>
+      </div>
+    );
+  }
+
   if (!isRecovery) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
