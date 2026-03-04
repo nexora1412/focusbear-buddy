@@ -12,22 +12,42 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [checking, setChecking] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check hash params for recovery type
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     if (hashParams.get('type') === 'recovery') {
       setIsRecovery(true);
+      setChecking(false);
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
+        setChecking(false);
+      } else if (event === 'SIGNED_IN') {
+        // If we land here via recovery link, Supabase may fire SIGNED_IN
+        // Check if the URL has recovery indicators
+        const hash = window.location.hash;
+        if (hash.includes('type=recovery') || hash.includes('type%3Drecovery')) {
+          setIsRecovery(true);
+        }
+        setChecking(false);
+      } else {
+        setChecking(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Timeout fallback
+    const timeout = setTimeout(() => setChecking(false), 3000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleReset = async (e: React.FormEvent) => {
